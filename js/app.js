@@ -91,31 +91,31 @@ const products = [
   }
 ];
 
-// State
+
 let cart = JSON.parse(localStorage.getItem('apexkicks_cart')) || [];
 let wishlist = JSON.parse(localStorage.getItem('apexkicks_wishlist')) || [];
 let currentFilter = 'All';
 
-// DOM Elements
+
 const appContainer = document.getElementById('app');
 const cartBadge = document.getElementById('cart-badge');
 const wishlistBadge = document.getElementById('wishlist-badge');
 const menuToggle = document.querySelector('.menu-toggle');
 const navLinks = document.querySelector('.nav-links');
 
-// Initialize App
+
 function init() {
   updateBadges();
   handleRoute();
   window.addEventListener('hashchange', handleRoute);
 
-  // Mobile Menu Toggle
-  if(menuToggle && navLinks) {
+
+  if (menuToggle && navLinks) {
     menuToggle.addEventListener('click', () => {
       navLinks.classList.toggle('active');
     });
 
-    // Close menu when a link is clicked
+
     navLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         navLinks.classList.remove('active');
@@ -124,14 +124,14 @@ function init() {
   }
 }
 
-// Router
+
 function handleRoute() {
   const hash = window.location.hash.slice(1) || 'home';
   const parts = hash.split('/');
   const route = parts[0];
   const param = parts.length > 1 ? decodeURIComponent(parts[1]) : null;
 
-  switch(route) {
+  switch (route) {
     case 'home':
       renderHome();
       break;
@@ -139,9 +139,9 @@ function handleRoute() {
       if (param) {
         currentFilter = param;
       } else {
-        // If just #shop, we shouldn't force 'All' if they were just browsing, 
-        // but it's cleaner to reset to 'All' when clicking the main Shop link.
-        currentFilter = 'All'; 
+
+
+        currentFilter = 'All';
       }
       renderShop();
       break;
@@ -170,14 +170,14 @@ function handleRoute() {
 function updateActiveNav(route) {
   document.querySelectorAll('.nav-links a').forEach(a => {
     a.classList.remove('active');
-    // Basic matching for shop sub-routes
-    if(a.getAttribute('href').startsWith(`#${route}`)) {
+
+    if (a.getAttribute('href').startsWith(`#${route}`)) {
       a.classList.add('active');
     }
   });
 }
 
-// Views
+
 function renderHome() {
   appContainer.innerHTML = `
     <section class="hero container">
@@ -202,9 +202,9 @@ function renderHome() {
 
 function renderShop() {
   const categories = ['All', ...new Set(products.map(p => p.category))];
-  
-  const filteredProducts = currentFilter === 'All' 
-    ? products 
+
+  const filteredProducts = currentFilter === 'All'
+    ? products
     : products.filter(p => p.category === currentFilter);
 
   appContainer.innerHTML = `
@@ -216,9 +216,9 @@ function renderShop() {
         `).join('')}
       </div>
       <div class="product-grid">
-        ${filteredProducts.length > 0 
-          ? filteredProducts.map(p => getProductCardHTML(p)).join('') 
-          : '<p>No products found.</p>'}
+        ${filteredProducts.length > 0
+      ? filteredProducts.map(p => getProductCardHTML(p)).join('')
+      : '<p>No products found.</p>'}
       </div>
     </div>
   `;
@@ -226,7 +226,7 @@ function renderShop() {
 
 function renderProductDetail(id) {
   const product = products.find(p => p.id === id);
-  if(!product) return renderHome();
+  if (!product) return renderHome();
 
   const inWishlist = wishlist.some(item => item.id === id);
 
@@ -379,7 +379,7 @@ function renderContact() {
   `;
 }
 
-// Helpers & Actions
+
 function getProductCardHTML(product) {
   const inWishlist = wishlist.some(item => item.id === product.id);
   return `
@@ -407,10 +407,10 @@ function selectSize(btn) {
 function addToCart(id) {
   const product = products.find(p => p.id === id);
   const activeSizeBtn = document.querySelector('.size-btn.active');
-  
+
   if (!activeSizeBtn) {
     alert('Please select a size before adding to cart.');
-    // Visual error feedback on size selector
+
     const sizeSelector = document.querySelector('.size-selector');
     sizeSelector.style.border = '1px solid var(--accent-red)';
     sizeSelector.style.padding = '1rem';
@@ -432,8 +432,8 @@ function addToCart(id) {
   }
 
   saveState();
-  
-  // Visual feedback
+
+
   const btn = document.querySelector('.action-buttons .btn-primary');
   const originalText = btn.innerText;
   btn.innerText = 'Added!';
@@ -466,16 +466,16 @@ function updateQty(id, change) {
 function toggleWishlist(id) {
   const product = products.find(p => p.id === id);
   const index = wishlist.findIndex(item => item.id === id);
-  
+
   if (index > -1) {
     wishlist.splice(index, 1);
   } else {
     wishlist.push(product);
   }
-  
+
   saveState();
-  
-  // Re-render current view if needed
+
+
   const hash = window.location.hash.slice(1);
   if (hash.startsWith('product/')) renderProductDetail(id);
   else if (hash === 'wishlist') renderWishlist();
@@ -498,5 +498,5 @@ function updateBadges() {
   wishlistBadge.style.display = wishlist.length > 0 ? 'flex' : 'none';
 }
 
-// Start
+
 document.addEventListener('DOMContentLoaded', init);
